@@ -31,6 +31,7 @@ file_path_rp = '/home/nbadolo/Bureau/Aymard/Donnees_sph/pyssed_log/radiative_par
 file_path_pp = '/home/nbadolo/Bureau/Aymard/Donnees_sph/pyssed_log/position_parameters.ods'
 
 
+
 # Pour la recuperation de la luminosité de l'étoile 
 df_rp = pd.read_excel(file_path_rp) # ouverture du tableau en question
 df_rp_name = df_rp["#Object"]  # lecture de la colonne des noms des objets
@@ -105,6 +106,41 @@ new_pointp = function_interp1(new_xp)
 area_p = np.trapz(new_pointp)  # flux de poussière totale integrée
 Ldust = area_p*4*np.pi*dstr**2
 
+
+
+"""
+# Calculation of the excess using 
+"""
+
+# Interpolation of derered flux
+x_obs = (lmbd_interp)
+y_obs = (dered_lst)
+function_interp_obs = interp1d(x_obs, y_obs)   # interpolation
+new_xobs = np.arange(np.min(x_obs), np.max(x_obs), step)
+new_point_obs = function_interp_obs(new_xobs)
+
+#Integration of dereded flux 
+area_obs = np.trapz(new_point_obs)
+F_obs_tot = area_obs
+
+#Interpolation of stellar flux (modelled flux)
+x_str = (lmbd_interp)
+y_str = ((Fmod_lst))
+function_interp_str = interp1d(x_str, y_str) # interpolation
+new_xstr = np.arange(np.min(x_str), np.max(x_str), step) # bizare
+new_point_str = function_interp_str(new_xstr)
+
+ 
+
+#integration of stellar flux
+area_str = np.trapz(new_point_str)
+F_str_tot = area_str
+
+# calculation of the infrared excess ( ratio of total observed flux to total stellar flux(model))
+LIR_vs_L  =  F_obs_tot/F_str_tot
+#print('The infrared excess of ' +star_name+ ' is E_IR = ' + str(E_IR))
+
+
 plt.figure(10)
 plt.clf()
 plt.plot(x, y, 'o')
@@ -116,3 +152,19 @@ plt.savefig('/home/nbadolo/Bureau/test_interpolation/Fdust_'+star_name+'.png',
                 dpi=100, bbox_inches ='tight')
 plt.tight_layout()
 plt.show()
+
+
+# Pour la recuperation de la luminosité de l'étoile 
+df_rp = pd.read_excel(file_path_rp) # ouverture du tableau en question
+df_rp_name = df_rp["#Object"]  # lecture de la colonne des noms des objets
+df_rp_lum = df_rp["Luminosity"] # lecture de la colonne des  luminosités
+n_targ = len(df_rp_name) # taille de la colonne des noms
+print(n_targ)
+
+# Pour la recuperation de la distance de l'étoile 
+df_pp = pd.read_excel(file_path_pp)
+df_pp_name = df_pp["#Object"]  # lecture de la colonne des noms des objets
+df_pp_dist = df_pp["Distance"] # lecture de la colonne des  distances
+
+def CalcExcess(star_name) :
+    file_path_r = '/home/nbadolo/Bureau/Aymard/Donnees_sph/pyssed_log/magn/'+star_name+'.ods'
