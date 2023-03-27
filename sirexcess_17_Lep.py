@@ -1,13 +1,17 @@
 #!/usr/bin/env python3
 # -*- coding: utf-8 -*-
 """
-Created on Fri Dec  2 09:22:51 2022
+Created on Thu Mar  9 14:28:37 2023
 
 @author: nbadolo
 """
 
+
 """
-Calcule l'excès infra rouge  d'une étoile ainsi que sa fraction de lumière retraitée dans l'infrarouge'
+Calcule l'excès infra rouge  d'une étoile (ici 17_Lep ) ainsi que sa fraction de
+lumière retraitée dans l'infrarouge en utilisant les mêmes valeurs du flux (en ligne de l'étoile) 
+que Iain. Ainsi, je cherche à valider mon code pour le calcul de l'excès infrarouge en comparant les 
+valeurs trouvées  à celle de Iain
 
 """
 
@@ -22,15 +26,27 @@ from scipy.interpolate import  lagrange, interp1d
 
 
 
-star_name = '17_Lep'
+star_name = 'S_Lep'
 
-#opening
-file_path_r = '/home/nbadolo/Bureau/Aymard/Donnees_sph/pyssed_log/magn/'+star_name+'.ods'
+### opening
+
+##17_Lep_code_test
+# file_path_r = '/home/nbadolo/Bureau/Aymard/Donnees_sph/pyssed_log/17_Lep_code_test.ods'
+# df_r = pd.read_excel(file_path_r) # open .sed file converted to .ods
+# lambda_lst = df_r["wavel"]    #wavelengths
+# Fobsdered = df_r["dered"]/1000 # dereded flux (all values)
+
+# ratio = df_r["ratio_f_mod"] # Ratio of observed (dered) to modelled flux
+# Fmod = Fobsdered/ratio  # modelled flux
+
+##17_Lep_code_test2
+file_path_r = '/home/nbadolo/Bureau/Aymard/Donnees_sph/pyssed_log/'+ star_name +'_code_test2.ods'
 df_r = pd.read_excel(file_path_r) # open .sed file converted to .ods
 lambda_lst = df_r["wavel"]    #wavelengths
-Fobs = df_r["flux"]   # observed flux 
-Fobsdered = df_r["dered"] # dereded flux (all values)
-Fmod = df_r["model"] # modelled flux
+Fobs = df_r["obs"]/1000   # observed flux 
+ratio = df_r["ratio_f_mod"] # Ratio of observed (dered) to modelled flux
+Fobsdered = Fobs/ratio  # dereded flux (all values)
+Fmod = Fobsdered/ratio  # modelled flux
 
 # lists
 Fdust_lst = []   # dust flux
@@ -42,13 +58,15 @@ dered_lst = []   # dereded flux to be interpolated
 # Determining the wavel >= 2.2µm and corresponding fluxes values 
 n_lambda_lst = len(lambda_lst) 
 for i in range(n_lambda_lst) :
-    if lambda_lst[i] >= 22000 : 
+    if lambda_lst[i] >= 22000: 
         lmbd_interp.append(lambda_lst[i]/10000) 
         dered_lst.append(Fobsdered[i]) 
         Fmod_lst.append(Fmod[i])
         Fdust_lst.append(Fobsdered[i]-Fmod[i])
         Fr_lst.append(Fobsdered[i]/Fmod[i])
-
+        #Fr_lst.append(ratio[i])
+print(lmbd_interp)
+print(Fr_lst)
 n_obs = len(lmbd_interp)  # number of observations at wavelengths >2.2 µm.
 print(n_obs)
 #Calculation of infrared excess
@@ -87,7 +105,7 @@ new_point_g = function_interp_g(new_g)
 area_g = np.trapz(new_point_g)
 F_str_tot = area_g
 
-LIR_vs_L  =  F_dust_tot/F_str_tot 
+LIR_vs_L = ( F_dust_tot/F_str_tot)/2 
 
 print('the fraction of the ' +star_name+' stellar light into the IR is: L_IR/L∗ = '+ str(LIR_vs_L))
 
