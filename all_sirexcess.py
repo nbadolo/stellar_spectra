@@ -8,8 +8,15 @@ Created on Fri Dec  9 15:51:02 2022
 
 
 """
-Calcule l'excès infra rouge  d'une liste d'étoiles ainsi que leur fraction de lumière retraitée dans l'infrarouge'
-à partir de l'algorythme de Iain. Les valeurs des flux sont calculées à l'aide du code pyssed.py de Iain.
+Calcule l'excès infra rouge  d'une liste d'étoiles ainsi que leur fraction de lumière retraitée dans l'infrarouge
+à partir de l'algorythme de Iain. Les valeurs des flux sont obtenue à l'aide du code pyssed.py de Iain qui consulte des catalogues en ligne pour les recuperer. 
+Il prends les tables calculées avec le code Iain et rangée dans :
+    '/home/nbadolo/Bureau/Aymard/Donnees_sph/pyssed_log/used_tables/'
+
+Les valeurs de E_IR et L_IR et de m_J-K calculée selon la méthode de Iain (McDonald 2012 et al.) sont rangées dans le repertoire :
+    '/home/nbadolo/Bureau/Aymard/Donnees_sph/pyssed_log/used_tables/'+ sub_folder +'/txt_files/'+sub_folder+'/folder_csv/
+
+"sub_folder" désigne le nom de la table extraite. 
 
 """
 import numpy as np
@@ -26,11 +33,23 @@ from astropy.table import Table
 # #star_path = '/home/nbadolo/Bureau/Aymard/Donnees_sph/pyssed_log/Acsv/'
 # star_path2 = '/home/nbadolo/Bureau/Aymard/Donnees_sph/log/'
 
+
+#sub_folder = 'resolved_stars'
 #sub_folder = 'sample_stars'
+
+# === Chemins ===
+# sub_folder = 'McD_simple'
+# base_path = "/home/nbadolo/Bureau/Aymard/Tables"
+# star_path = f"{base_path}/{sub_folder}/single_csv/"
+# EIR_path = f"{base_path}/{sub_folder}/txt_files"
+# plot_path = f"{base_path}/{sub_folder}/plots/"
+# os.makedirs(plot_path, exist_ok=True)
+
+
 sub_folder = 'large_table_stars'
-star_path = '/home/nbadolo/Bureau/Aymard/Donnees_sph/pyssed_log/'+sub_folder+'/folder_csv/'
-#star_path = '/home/nbadolo/Bureau/Aymard/Donnees_sph/pyssed_log/Acsv/'
-#star_path2 = '/home/nbadolo/Bureau/Aymard/Donnees_sph/log/'
+star_path = '/home/nbadolo/Bureau/Aymard/Donnees_sph/pyssed_log/used_tables/'+sub_folder+'/folder_csv/'
+star_path = '/home/nbadolo/Bureau/Aymard/Donnees_sph/pyssed_log/Acsv/'
+star_path2 = '/home/nbadolo/Bureau/Aymard/Donnees_sph/log/'
 lst_str = os.listdir(star_path)
 print(lst_str)
 n_lst_str = len(lst_str)
@@ -56,7 +75,7 @@ Excess_vs_LIR_r = np.zeros((n_lst_str, 2)) # tableau de l'excess E_IR( 1ere val)
 J_K_arr = np.zeros((n_lst_str, 2)) # tableau pour les valeurs du J-K (magnitude en [0], flux en  [1])
 V_filter_ar = np.zeros((n_lst_str, 2)) # tableau pour les valeurs de magnitude en [0] et de fluxen [1]pour le filtre V
 # Pour la sauvegarde des paramètres stellaire fichiers .txt
-EIR_path = '/home/nbadolo/Bureau/Aymard/Donnees_sph/pyssed_log/'+ sub_folder +'/txt_files/'
+EIR_path = f"{base_path}"
 file_name = sub_folder +'_E_IR_L_LIR.txt'
 Excess_IR = open("{}/{}".format(EIR_path, file_name), "w")
 Excess_IR.write("{}, {}, {}, {}, {}, {}, {}\n".format('Star_name', 'E_IR', 'L_IR/L∗', 'M_J_K', 'F_J_K', 'V_mag', 'V_flux'))
@@ -65,7 +84,7 @@ for i in range(n_lst_str):
     # if lst_str[i][4:8]=='113249':
     #     print(i)
     #     print(lst_str[i])
-    if lst_str[i][0] != '~' and lst_str[i][-1] !='#' and i != 128:
+    if lst_str[i][0] != '.' and lst_str[i][-1] !='#' and i != 128:
         print(lst_str[i][-1])
         print(lst_str[i][0])
         
@@ -170,9 +189,9 @@ for i in range(n_lst_str):
         
         step = 0.05  # the step for interpolation
     
-        """
+        
         # Calculation of fraction of stellar light reprocessed into the infrared
-        """
+        
     
         #interpolation of dust flux
         x_d = (lmbd_interp)
@@ -181,6 +200,7 @@ for i in range(n_lst_str):
         #     x_d = [2.2, 2.3]
         #     y_d = [1,1.1]
         #Excess_vs_LIR_r[i] = 0
+        LIR_vs_L = 0
         if lmbd_interp : #pour les étoiles qui ont  des  lambda >  2.2 µm
             
             function_interp_d = interp1d(x_d, y_d)   # interpolation
@@ -258,9 +278,9 @@ for i in range(n_lst_str):
             plt.xlim(0, 30)
             plt.legend(["dereded flux","interpolated dereded fux","stellar fux","interpolated stellar fux"], prop={'size': 20})
             plt.title(star_name, size = 20)
-            plt.savefig('/home/nbadolo/Bureau/Aymard/Donnees_sph/pyssed_log/'+sub_folder+'/plots/F_str_'+star_name+'.png', 
+            plt.savefig('/home/nbadolo/Bureau/Aymard/Donnees_sph/pyssed_log/used_tables/'+sub_folder+'/plots/F_str_'+star_name+'.png', 
                             dpi=100, bbox_inches ='tight')
-            plt.savefig('/home/nbadolo/Bureau/Aymard/Donnees_sph/pyssed_log/'+sub_folder+'/plots/F_str_'+star_name+'.pdf', 
+            plt.savefig('/home/nbadolo/Bureau/Aymard/Donnees_sph/pyssed_log/used_tables/'+sub_folder+'/plots/F_str_'+star_name+'.pdf', 
                             dpi=100, bbox_inches ='tight')
             plt.tight_layout()
             plt.show()

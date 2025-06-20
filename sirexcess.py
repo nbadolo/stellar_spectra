@@ -51,17 +51,22 @@ for i in range(n_lambda_lst) :
 
 n_obs = len(lmbd_interp)  # number of observations at wavelengths >2.2 µm.
 print(n_obs)
-#Calculation of infrared excess
 
+#Calculation of infrared excess
 E_IR = np.sum(Fr_lst)/(n_obs)
 
 print('The infrared excess of ' +star_name+ ' is E_IR = ' + str(E_IR))
 
 step = 0.05  # the step for interpolation
 
-"""
+
+
+
+# =============================================================================
 # Calculation of fraction of stellar light reprocessed into the infrared
-"""
+# =============================================================================
+
+
 
 #interpolation of dust flux
 x_d = (lmbd_interp)

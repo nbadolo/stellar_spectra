@@ -6,6 +6,12 @@ Created on Thu Mar 23 14:20:04 2023
 @author: nbadolo
 """
 
+"""
+## This code write the object name of a given list in a '*.txt' file. It has been used 
+   to get the name of each star of my two stars samples as input of Iain code. 
+"""
+
+
 import os
 import pandas as pd
 
@@ -14,6 +20,7 @@ str_name_path1 = '/home/nbadolo/A_large_log/'
 lst_str1 = os.listdir(str_name_path1)
 n_lst_str1 = len(lst_str1)
 
+##for the  small sample
 out_path1 = '/home/nbadolo/Bureau/Aymard/Donnees_sph/pyssed_log/txt_files/'
 out_path2 = '/home/nbadolo/SIM_CODES/PySSED/v0.2/src/'
 lst_name1 = 'log_lst.list'
@@ -29,6 +36,7 @@ for i in range(n_lst_str1) :
     log_lst_.write("{}\n".format(lst_str1[i]))
 print('le nombre d_objets total  à étudier est ' + str(n_lst_str1))
 
+## for the large sample
 str_name_path2 = '/home/nbadolo/Bureau/Aymard/These/for_biblio_papers/used_tables/large_log.ods'
 df_l = pd.read_excel(str_name_path2)
 ident_str  = df_l["HIP"]
